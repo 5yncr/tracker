@@ -58,7 +58,7 @@ def handle_post(conn, request):
     else:
         send_server_response(
             conn, ERROR_RESULT,
-            'Neither node nor drop id was provided',
+            'Neither valid node nor drop id was provided',
         )
 
 
