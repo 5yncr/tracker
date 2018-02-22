@@ -69,7 +69,7 @@ def request_post_node_id(conn, request):
     :param request: [POST, node_id, pubkey]
     :return:
     """
-    if type(request[ID_INDEX]) is not str:
+    if type(request[VALUE_INDEX]) is not str:
         send_server_response(
             conn, ERROR_RESULT,
             'Proper public key was not provided',
