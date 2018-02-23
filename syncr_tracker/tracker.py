@@ -26,12 +26,11 @@ from syncr_tracker.constants import VALUE_INDEX
 drop_availability = defaultdict(list)
 
 
-def handle_request(conn, request, addr):
+def handle_request(conn, request):
     """
     Dispatches GET and POST requests
     :param conn: TCP socket connection between server and client
     :param request: [POST/GET, node/drop id, potential value data]
-    :param addr: (IP, port)
     :return:
     """
     if request[TYPE_INDEX] == 'GET':
@@ -71,14 +70,14 @@ def handle_get(conn, request):
     :param request: [GET, node/drop id, pubkey or node ip port tuple]
     :return:
     """
-    id = request[ID_INDEX]
+    id_type = request[ID_INDEX]
 
-    id_size = len(id)
+    id_size = len(id_type)
 
     if id_size == DROP_ID_BYTE_SIZE:
-        retrieve_drop_info(conn, id)
+        retrieve_drop_info(conn, id_type)
     elif id_size == NODE_ID_BYTE_SIZE:
-        retrieve_public_key(conn, id)
+        retrieve_public_key(conn, id_type)
     else:
         send_server_response(
             conn, ERROR_RESULT,
@@ -119,7 +118,7 @@ def trim_expired_tuples(key):
     :return: A list of tuples that have existed for less than five minutes.
     """
     for tup in drop_availability[key]:
-        if (datetime.datetime() -
+        if (datetime.datetime -
                 tup[DROP_TIMESTAMP_INDEX]).total_seconds() > TTL:
             drop_availability[key].remove(tup)
 
@@ -267,7 +266,7 @@ def main():
                 break
             print('Data received')
             request = bencode.decode(data)
-            handle_request(conn, request, addr)
+            handle_request(conn, request)
         conn.close()
 
 
