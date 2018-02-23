@@ -7,16 +7,17 @@ import sys
 from collections import defaultdict
 
 import bencode
-from constants import DROP_ID_BYTE_SIZE
-from constants import DROP_IP_INDEX
-from constants import DROP_NODE_INDEX
-from constants import DROP_PORT_INDEX
-from constants import ERROR_RESULT
-from constants import ID_INDEX
-from constants import NODE_ID_BYTE_SIZE
-from constants import OK_RESULT
-from constants import TYPE_INDEX
-from constants import VALUE_INDEX
+
+from syncr_tracker.constants import DROP_ID_BYTE_SIZE
+from syncr_tracker.constants import DROP_IP_INDEX
+from syncr_tracker.constants import DROP_NODE_INDEX
+from syncr_tracker.constants import DROP_PORT_INDEX
+from syncr_tracker.constants import ERROR_RESULT
+from syncr_tracker.constants import ID_INDEX
+from syncr_tracker.constants import NODE_ID_BYTE_SIZE
+from syncr_tracker.constants import OK_RESULT
+from syncr_tracker.constants import TYPE_INDEX
+from syncr_tracker.constants import VALUE_INDEX
 
 drop_availability = defaultdict(list)
 
@@ -52,6 +53,7 @@ def handle_post(conn, request):
     :return:
     """
     if len(request[ID_INDEX]) == NODE_ID_BYTE_SIZE:
+        print('Test')
         request_post_node_id(conn, request)
     elif len(request[ID_INDEX]) == DROP_ID_BYTE_SIZE:
         request_post_drop_id(conn, request)
@@ -112,10 +114,12 @@ def request_post_drop_id(conn, request):
     """
     if type(request[VALUE_INDEX]) is not list or \
             len(request[VALUE_INDEX]) != 3:
+        print('Invalid node, IP, port tuple')
         send_server_response(
             conn, ERROR_RESULT,
             'Invalid node, IP, port tuple',
         )
+        return
     drop_availability[request[ID_INDEX]] = [
         request[VALUE_INDEX].append(datetime.datetime),
     ]
@@ -138,7 +142,7 @@ def generate_node_key_file_name(node_id):
                                     .decode('utf-8'))
 
 
-def send_server_response(conn, result, msg):
+def send_server_response(conn, result, msg, data=''):
     """
     Sends a dict as a server response with the result and msg
     :param conn: TCP socket connection between server and client
@@ -149,6 +153,7 @@ def send_server_response(conn, result, msg):
     conn.send(bencode.encode({
         'result': result,
         'message': msg,
+        'data': data,
     }))
 
 

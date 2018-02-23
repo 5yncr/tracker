@@ -10,8 +10,10 @@ chardet==3.0.4
 coverage==4.5.1
 cryptography==2.1.4
 flake8==3.5.0
+httplib2==0.10.3
 identify==1.0.7
 idna==2.6
+magicmock==0.3
 mccabe==0.6.1
 mypy==0.560
 Naked==0.1.31
