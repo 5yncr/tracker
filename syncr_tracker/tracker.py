@@ -138,8 +138,11 @@ def generate_node_key_file_name(node_id):
     :param node_id:
     :return: public key file
     """
-    return 'pub_keys/{}.pub'.format(base64.b64encode(node_id, altchars=b'+-')
-                                    .decode('utf-8'))
+    return os.join(
+        'pub_keys', '{}.pub'.format(
+            base64.b64encode(node_id, altchars=b'+-').decode('utf-8'),
+        ),
+    )
 
 
 def send_server_response(conn, result, msg, data=''):
