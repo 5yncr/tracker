@@ -7,19 +7,20 @@ import sys
 from collections import defaultdict
 
 import bencode
-from constants import DROP_ID_BYTE_SIZE
-from constants import DROP_IP_INDEX
-from constants import DROP_NODE_INDEX
-from constants import DROP_PORT_INDEX
-from constants import DROP_TIMESTAMP_INDEX
-from constants import ERROR_RESULT
-from constants import ID_INDEX
-from constants import NODE_ID_BYTE_SIZE
-from constants import OK_RESULT
-from constants import PUB_KEYS_DIRECTORY
-from constants import TTL
-from constants import TYPE_INDEX
-from constants import VALUE_INDEX
+
+from syncr_tracker.constants import DROP_ID_BYTE_SIZE
+from syncr_tracker.constants import DROP_IP_INDEX
+from syncr_tracker.constants import DROP_NODE_INDEX
+from syncr_tracker.constants import DROP_PORT_INDEX
+from syncr_tracker.constants import DROP_TIMESTAMP_INDEX
+from syncr_tracker.constants import ERROR_RESULT
+from syncr_tracker.constants import ID_INDEX
+from syncr_tracker.constants import NODE_ID_BYTE_SIZE
+from syncr_tracker.constants import OK_RESULT
+from syncr_tracker.constants import PUB_KEYS_DIRECTORY
+from syncr_tracker.constants import TTL
+from syncr_tracker.constants import TYPE_INDEX
+from syncr_tracker.constants import VALUE_INDEX
 
 
 drop_availability = defaultdict(list)
@@ -40,7 +41,7 @@ def handle_request(conn, request, addr):
         print('POST request')
         handle_post(conn, request)
     else:
-        # Return some sort of error
+        send_server_response(conn, ERROR_RESULT, 'Invalid request type')
         pass
 
 
@@ -52,6 +53,7 @@ def handle_post(conn, request):
     :return:
     """
     if len(request[ID_INDEX]) == NODE_ID_BYTE_SIZE:
+        print('Test')
         request_post_node_id(conn, request)
     elif len(request[ID_INDEX]) == DROP_ID_BYTE_SIZE:
         request_post_drop_id(conn, request)
@@ -195,10 +197,12 @@ def request_post_drop_id(conn, request):
     """
     if type(request[VALUE_INDEX]) is not list or \
             len(request[VALUE_INDEX]) != 3:
+        print('Invalid node, IP, port tuple')
         send_server_response(
             conn, ERROR_RESULT,
             'Invalid node, IP, port tuple',
         )
+        return
     drop_availability[request[ID_INDEX]] = [
         request[VALUE_INDEX].append(datetime.datetime),
     ]
@@ -217,17 +221,20 @@ def generate_node_key_file_name(node_id):
     :param node_id:
     :return: public key file
     """
-    return 'pub_keys/{}.pub'.format(base64.b64encode(node_id, altchars=b'+-')
-                                    .decode('utf-8'))
+    return os.path.join(
+        'pub_keys', '{}.pub'.format(
+            base64.b64encode(node_id, altchars=b'+-').decode('utf-8'),
+        ),
+    )
 
 
-def send_server_response(conn, result, msg, data=None):
+def send_server_response(conn, result, msg, data=''):
     """
     Sends a dict as a server response with the result and msg
-    :param data: return data to client
     :param conn: TCP socket connection between server and client
     :param result: 'OK' | 'ERROR'
     :param msg: text of what happened
+    :param data: Data to be sent back to the user.
     :return:
     """
     conn.send(bencode.encode({
@@ -239,29 +246,30 @@ def send_server_response(conn, result, msg, data=None):
 
 def main():
     """
-
+    Runs the server loop taking in GET and POST requests and handling them
+    accordingly
     :return:
     """
-    TCP_IP = sys.argv[1]
-    TCP_PORT = sys.argv[2]
-    BUFFER_SIZE = 4096
+    tcp_ip = sys.argv[1]
+    tcp_port = sys.argv[2]
+    buffer_size = 4096
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((TCP_IP, int(TCP_PORT)))
-    s.listen(1)
+    s.bind((tcp_ip, int(tcp_port)))
+    s.listen(5)
 
     while 1:
         conn, addr = s.accept()
         print('Connection address:', addr)
         while 1:
-            data = conn.recv(BUFFER_SIZE)
+            data = conn.recv(buffer_size)
             if not data:
                 break
-            handle_request(data, addr)
-            print("Received data.")
-            conn.send(data)  # echo
+            print('Data received')
+            request = bencode.decode(data)
+            handle_request(conn, request, addr)
         conn.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
