@@ -71,7 +71,7 @@ def test_trim_expired_tuples():
     assert len(drop_availability['test_key']) == 2
 
     for tup in drop_availability['test_key']:
-        assert len(tup) == 3
+        assert len(tup) == 4
         assert tup[0] == 'NODE_PASS'
         assert tup[1] == 'IP_PASS'
         assert tup[2] == 'PORT_PASS'
