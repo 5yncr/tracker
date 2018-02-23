@@ -138,7 +138,7 @@ def generate_node_key_file_name(node_id):
     :param node_id:
     :return: public key file
     """
-    return os.join(
+    return os.path.join(
         'pub_keys', '{}.pub'.format(
             base64.b64encode(node_id, altchars=b'+-').decode('utf-8'),
         ),
