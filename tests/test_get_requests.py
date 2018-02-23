@@ -1,9 +1,12 @@
+import datetime
 import hashlib
 from unittest import mock
 from unittest.mock import MagicMock
 from unittest.mock import Mock
 
+from syncr_tracker.tracker import drop_availability
 from syncr_tracker.tracker import handle_get
+from syncr_tracker.tracker import trim_expired_tuples
 
 
 def test_handle_get():
@@ -40,3 +43,35 @@ def test_handle_get():
         mock_retrieve_drop_info.assert_called_once()
         mock_retrieve_public_key.assert_called_once()
         mock_send_server_response.assert_called_once()
+
+
+def test_trim_expired_tuples():
+    tup_pass = (
+        'NODE_PASS', 'IP_PASS', 'PORT_PASS',
+        datetime.datetime.now() - datetime.timedelta(minutes=2),
+    )
+    tup_pass2 = (
+        'NODE_PASS', 'IP_PASS', 'PORT_PASS',
+        datetime.datetime.now() - datetime.timedelta(minutes=4),
+    )
+    tup_fail = (
+        'NODE_FAIL', 'IP_FAIL', 'PORT_FAIL',
+        datetime.datetime.now() - datetime.timedelta(days=1),
+    )
+    tup_fail2 = (
+        'NODE_FAIL', 'IP_FAIL', 'PORT_FAIL',
+        datetime.datetime.now() -
+        datetime.timedelta(minutes=5, seconds=10),
+    )
+
+    drop_availability['test_key'] = [tup_pass, tup_fail, tup_pass2, tup_fail2]
+
+    trim_expired_tuples('test_key')
+
+    assert len(drop_availability['test_key']) == 2
+
+    for tup in drop_availability['test_key']:
+        assert len(tup) == 3
+        assert tup[0] == 'NODE_PASS'
+        assert tup[1] == 'IP_PASS'
+        assert tup[2] == 'PORT_PASS'

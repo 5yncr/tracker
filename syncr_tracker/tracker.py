@@ -93,7 +93,10 @@ def retrieve_drop_info(conn, drop_id):
     :return: list of node ip port tuples without timestamps to the client.
     """
     if drop_id not in drop_availability:
-        send_server_response(conn, ERROR_RESULT, 'Drop ID does not exist')
+        send_server_response(
+            conn, ERROR_RESULT,
+            'Drop does not exist or is currently unavailable',
+        )
     else:
         truncated_list = []
         trim_expired_tuples(drop_id)
@@ -131,14 +134,17 @@ def retrieve_public_key(conn, node_id):
     :return: Message is sent to client with public key, if available
     """
 
-    if not os.path.exists(PUB_KEYS_DIRECTORY):
+    file_name = generate_node_key_file_name(node_id)
+    files = os.listdir(PUB_KEYS_DIRECTORY)
+
+    if not os.path.exists(PUB_KEYS_DIRECTORY) or file_name not in files:
         send_server_response(
             conn, ERROR_RESULT,
-            'Public key does not exist for given Node ID',
+            'Public key file does not exist for given Node ID',
         )
         pass
 
-    with open(generate_node_key_file_name(node_id), 'wb') \
+    with open(file_name, 'wb') \
             as pub_file:
         public_key = pub_file.read()
         send_server_response(
