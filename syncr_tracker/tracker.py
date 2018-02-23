@@ -7,20 +7,20 @@ import sys
 from collections import defaultdict
 
 import bencode
+from syncr_backend.constants import DROP_ID_BYTE_SIZE
+from syncr_backend.constants import DROP_IP_INDEX
+from syncr_backend.constants import DROP_NODE_INDEX
+from syncr_backend.constants import DROP_PORT_INDEX
+from syncr_backend.constants import DROP_TIMESTAMP_INDEX
+from syncr_backend.constants import ERROR_RESULT
+from syncr_backend.constants import ID_INDEX
+from syncr_backend.constants import NODE_ID_BYTE_SIZE
+from syncr_backend.constants import OK_RESULT
+from syncr_backend.constants import TTL
+from syncr_backend.constants import TYPE_INDEX
+from syncr_backend.constants import VALUE_INDEX
 
-from syncr_tracker.constants import DROP_ID_BYTE_SIZE
-from syncr_tracker.constants import DROP_IP_INDEX
-from syncr_tracker.constants import DROP_NODE_INDEX
-from syncr_tracker.constants import DROP_PORT_INDEX
-from syncr_tracker.constants import DROP_TIMESTAMP_INDEX
-from syncr_tracker.constants import ERROR_RESULT
-from syncr_tracker.constants import ID_INDEX
-from syncr_tracker.constants import NODE_ID_BYTE_SIZE
-from syncr_tracker.constants import OK_RESULT
 from syncr_tracker.constants import PUB_KEYS_DIRECTORY
-from syncr_tracker.constants import TTL
-from syncr_tracker.constants import TYPE_INDEX
-from syncr_tracker.constants import VALUE_INDEX
 
 
 drop_availability = defaultdict(list)
