@@ -121,8 +121,8 @@ def trim_expired_tuples(key):
     :return: A list of tuples that have existed for less than five minutes.
     """
     for tup in drop_availability[key]:
-        if (datetime.datetime -
-                tup[DROP_TIMESTAMP_INDEX]).total_seconds() > TTL:
+        if (datetime.datetime.now() -
+                datetime.timedelta(minutes=TTL)) > tup[DROP_TIMESTAMP_INDEX]:
             drop_availability[key].remove(tup)
 
 
@@ -134,22 +134,29 @@ def retrieve_public_key(conn, node_id):
     :return: Message is sent to client with public key, if available
     """
 
-    file_name = generate_node_key_file_name(node_id)
-    files = os.listdir(PUB_KEYS_DIRECTORY)
-
-    if not os.path.exists(PUB_KEYS_DIRECTORY) or file_name not in files:
+    if not os.path.exists(PUB_KEYS_DIRECTORY):
         send_server_response(
             conn, ERROR_RESULT,
-            'Public key file does not exist for given Node ID',
+            'Public key directory does not exist',
         )
-        pass
+    else:
+        len_dir_name = len(PUB_KEYS_DIRECTORY)
+        file_name = generate_node_key_file_name(node_id)[len_dir_name:]
+        files = os.listdir(PUB_KEYS_DIRECTORY)
 
-    with open(file_name, 'wb') \
-            as pub_file:
-        public_key = pub_file.read()
-        send_server_response(
-            conn, OK_RESULT, 'Public key of given Node ID found', public_key,
-        )
+        if file_name not in files:
+            send_server_response(
+                conn, ERROR_RESULT,
+                'Public key file does not exist for given Node ID',
+            )
+        else:
+            with open(file_name, 'wb') \
+                    as pub_file:
+                public_key = pub_file.read()
+                send_server_response(
+                    conn, OK_RESULT,
+                    'Public key of given Node ID found', public_key,
+                )
 
 
 def request_post_node_id(conn, request):
