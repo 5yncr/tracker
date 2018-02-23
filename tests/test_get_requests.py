@@ -32,7 +32,7 @@ def test_handle_get():
         request = ['GET', drop_id, None]
         handle_get(conn, request)
         mock_retrieve_drop_info.assert_called_once()
-        mock_retrieve_public_key.assert_not_called()
+        mock_retrieve_public_key.assert_called_once()
         mock_send_server_response.assert_not_called()
 
         request = ['GET', b'\00', None]
