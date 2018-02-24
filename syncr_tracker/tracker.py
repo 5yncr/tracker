@@ -10,12 +10,12 @@ import bencode
 from syncr_backend.constants import DROP_ID_BYTE_SIZE
 from syncr_backend.constants import NODE_ID_BYTE_SIZE
 from syncr_backend.constants import TRACKER_DROP_AVAILABILITY_TTL
-from syncr_backend.constants import TRACKER_DROP_ERROR_RESULT
 from syncr_backend.constants import TRACKER_DROP_ID_RESULT
 from syncr_backend.constants import TRACKER_DROP_IP_INDEX
 from syncr_backend.constants import TRACKER_DROP_NODE_INDEX
 from syncr_backend.constants import TRACKER_DROP_PORT_INDEX
 from syncr_backend.constants import TRACKER_DROP_TIMESTAMP_INDEX
+from syncr_backend.constants import TRACKER_ERROR_RESULT
 from syncr_backend.constants import TRACKER_OK_RESULT
 from syncr_backend.constants import TRACKER_TYPE_INDEX
 from syncr_backend.constants import TRACKER_VALUE_INDEX
@@ -41,7 +41,7 @@ def handle_request(conn, request):
         handle_post(conn, request)
     else:
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Invalid request type',
         )
         pass
@@ -61,7 +61,7 @@ def handle_post(conn, request):
         request_post_drop_id(conn, request)
     else:
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Neither valid node nor drop id was provided',
         )
 
@@ -83,7 +83,7 @@ def handle_get(conn, request):
         retrieve_public_key(conn, id_type)
     else:
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Neither valid node nor drop id was provided',
         )
 
@@ -97,7 +97,7 @@ def retrieve_drop_info(conn, drop_id):
     """
     if drop_id not in drop_availability:
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Drop does not exist or is currently unavailable',
         )
     else:
@@ -141,7 +141,7 @@ def retrieve_public_key(conn, node_id):
 
     if not os.path.exists(PUB_KEYS_DIRECTORY):
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Public key directory does not exist',
         )
     else:
@@ -151,7 +151,7 @@ def retrieve_public_key(conn, node_id):
 
         if file_name not in files:
             send_server_response(
-                conn, TRACKER_DROP_ERROR_RESULT,
+                conn, TRACKER_ERROR_RESULT,
                 'Public key file does not exist for given Node ID',
             )
         else:
@@ -173,7 +173,7 @@ def request_post_node_id(conn, request):
     """
     if type(request[TRACKER_VALUE_INDEX]) is not str:
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Proper public key was not provided',
         )
     elif request[TRACKER_DROP_ID_RESULT] == hashlib\
@@ -187,7 +187,7 @@ def request_post_node_id(conn, request):
     else:
         print('Node/Key pairing rejected for mismatch key')
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Node/Key pairing rejected for mismatch key',
         )
 
@@ -218,7 +218,7 @@ def request_post_drop_id(conn, request):
             len(request[TRACKER_VALUE_INDEX]) != 3:
         print('Invalid node, IP, port tuple')
         send_server_response(
-            conn, TRACKER_DROP_ERROR_RESULT,
+            conn, TRACKER_ERROR_RESULT,
             'Invalid node, IP, port tuple',
         )
         return
