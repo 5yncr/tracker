@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 from unittest.mock import Mock
 
 import bencode
+from syncr_backend.constants import TRACKER_OK_RESULT
 
-from syncr_tracker.constants import TRACKER_OK_RESULT
 from syncr_tracker.tracker import generate_node_key_file_name
 from syncr_tracker.tracker import handle_post
 from syncr_tracker.tracker import send_server_response

@@ -10,12 +10,12 @@ import bencode
 from syncr_backend.constants import DROP_ID_BYTE_SIZE
 from syncr_backend.constants import NODE_ID_BYTE_SIZE
 from syncr_backend.constants import TRACKER_DROP_AVAILABILITY_TTL
-from syncr_backend.constants import TRACKER_DROP_ID_RESULT
 from syncr_backend.constants import TRACKER_DROP_IP_INDEX
 from syncr_backend.constants import TRACKER_DROP_NODE_INDEX
 from syncr_backend.constants import TRACKER_DROP_PORT_INDEX
 from syncr_backend.constants import TRACKER_DROP_TIMESTAMP_INDEX
 from syncr_backend.constants import TRACKER_ERROR_RESULT
+from syncr_backend.constants import TRACKER_ID_INDEX
 from syncr_backend.constants import TRACKER_OK_RESULT
 from syncr_backend.constants import TRACKER_TYPE_INDEX
 from syncr_backend.constants import TRACKER_VALUE_INDEX
@@ -54,10 +54,9 @@ def handle_post(conn, request):
     :param request: [POST, node/drop id, pubkey or node ip port tuple]
     :return:
     """
-    if len(request[TRACKER_DROP_ID_RESULT]) == NODE_ID_BYTE_SIZE:
-        print('Test')
+    if len(request[TRACKER_ID_INDEX]) == NODE_ID_BYTE_SIZE:
         request_post_node_id(conn, request)
-    elif len(request[TRACKER_DROP_ID_RESULT]) == DROP_ID_BYTE_SIZE:
+    elif len(request[TRACKER_ID_INDEX]) == DROP_ID_BYTE_SIZE:
         request_post_drop_id(conn, request)
     else:
         send_server_response(
@@ -73,7 +72,7 @@ def handle_get(conn, request):
     :param request: [GET, node/drop id, pubkey or node ip port tuple]
     :return:
     """
-    id_type = request[TRACKER_DROP_ID_RESULT]
+    id_type = request[TRACKER_ID_INDEX]
 
     id_size = len(id_type)
 
@@ -125,6 +124,7 @@ def trim_expired_tuples(key):
     :return: A list of tuples that have existed for less than five minutes.
     """
     for tup in drop_availability[key]:
+        print(tup)
         if (datetime.datetime.now() -
                 datetime.timedelta(seconds=TRACKER_DROP_AVAILABILITY_TTL)) > \
                 tup[TRACKER_DROP_TIMESTAMP_INDEX]:
@@ -146,18 +146,19 @@ def retrieve_public_key(conn, node_id):
         )
     else:
         len_dir_name = len(PUB_KEYS_DIRECTORY)
-        file_name = generate_node_key_file_name(node_id)[len_dir_name:]
+        file_name = generate_node_key_file_name(node_id)
         files = os.listdir(PUB_KEYS_DIRECTORY)
 
-        if file_name not in files:
+        if file_name[len_dir_name:] not in files:
             send_server_response(
                 conn, TRACKER_ERROR_RESULT,
                 'Public key file does not exist for given Node ID',
             )
         else:
-            with open(file_name, 'wb') \
-                    as pub_file:
+            with open(file_name, 'rb') as pub_file:
+                print(file_name)
                 public_key = pub_file.read()
+                print(public_key)
                 send_server_response(
                     conn, TRACKER_OK_RESULT,
                     'Public key of given Node ID found', public_key,
@@ -176,7 +177,7 @@ def request_post_node_id(conn, request):
             conn, TRACKER_ERROR_RESULT,
             'Proper public key was not provided',
         )
-    elif request[TRACKER_DROP_ID_RESULT] == hashlib\
+    elif request[TRACKER_ID_INDEX] == hashlib\
             .sha256(request[TRACKER_VALUE_INDEX].encode('utf-8')).digest():
         add_node_key_pairing(request)
         print('Node/Key pairing added')
@@ -201,7 +202,7 @@ def add_node_key_pairing(request):
     if not os.path.exists('pub_keys/'):
         os.makedirs('pub_keys/')
     with open(
-        generate_node_key_file_name(request[TRACKER_DROP_ID_RESULT]),
+        generate_node_key_file_name(request[TRACKER_ID_INDEX]),
         'wb',
     ) as pub_file:
         pub_file.write(request[TRACKER_VALUE_INDEX].encode('utf-8'))
@@ -222,11 +223,12 @@ def request_post_drop_id(conn, request):
             'Invalid node, IP, port tuple',
         )
         return
-    drop_availability[request[TRACKER_DROP_ID_RESULT]] = [
-        request[TRACKER_VALUE_INDEX].append(datetime.datetime),
-    ]
+    request[TRACKER_VALUE_INDEX].append(datetime.datetime.now())
+    drop_availability[request[TRACKER_ID_INDEX]].append(
+        request[TRACKER_VALUE_INDEX],
+    )
     print(
-        'Drop Availability Updated - ', request[TRACKER_DROP_ID_RESULT],
+        'Drop Availability Updated - ', request[TRACKER_ID_INDEX],
         '\n\tNode: ', request[TRACKER_VALUE_INDEX][TRACKER_DROP_NODE_INDEX],
         '\n\tIP: ', request[TRACKER_VALUE_INDEX][TRACKER_DROP_IP_INDEX],
         '\n\tPort: ', request[TRACKER_VALUE_INDEX][TRACKER_DROP_PORT_INDEX],
