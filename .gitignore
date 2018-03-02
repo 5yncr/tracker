@@ -102,4 +102,4 @@ ENV/
 
 .pytest_cache/
 MANIFEST
-/syncr_tracker/pub_keys/
+pub_keys/
