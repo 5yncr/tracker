@@ -124,7 +124,6 @@ def trim_expired_tuples(key):
     :return: A list of tuples that have existed for less than five minutes.
     """
     for tup in drop_availability[key]:
-        print(tup)
         if (datetime.datetime.now() -
                 datetime.timedelta(seconds=TRACKER_DROP_AVAILABILITY_TTL)) > \
                 tup[TRACKER_DROP_TIMESTAMP_INDEX]:
@@ -156,9 +155,7 @@ def retrieve_public_key(conn, node_id):
             )
         else:
             with open(file_name, 'rb') as pub_file:
-                print(file_name)
                 public_key = pub_file.read()
-                print(public_key)
                 send_server_response(
                     conn, TRACKER_OK_RESULT,
                     'Public key of given Node ID found', public_key,
