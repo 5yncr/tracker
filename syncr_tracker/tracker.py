@@ -282,13 +282,11 @@ def main():
     while 1:
         conn, addr = s.accept()
         print('Connection address:', addr)
-        request = None
+        request = b''
         while 1:
             data = conn.recv(buffer_size)
             if not data:
                 break
-            if request is None:
-                request = data
             else:
                 request += data
         print('Data recieved')
