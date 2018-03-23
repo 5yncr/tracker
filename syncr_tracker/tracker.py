@@ -290,7 +290,7 @@ def main():
             else:
                 request += data
         print('Data recieved')
-        request = bencode.decode(data)
+        request = bencode.decode(request)
         handle_request(conn, request)
         conn.close()
 
