@@ -1,6 +1,5 @@
 import base64
 import datetime
-import hashlib
 import os
 import socket
 import sys
@@ -22,6 +21,7 @@ from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
 from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
 from syncr_backend.constants import TRACKER_REQUEST_POST_KEY
 from syncr_backend.constants import TRACKER_REQUEST_POST_PEER
+from syncr_backend.utils.cyrpto_util import hash
 
 from syncr_tracker.constants import PUB_KEYS_DIRECTORY
 
@@ -182,8 +182,7 @@ def request_post_node_id(conn, request):
             conn, TRACKER_ERROR_RESULT,
             'drop_id incorrect size',
         )
-    elif request['node_id'] == hashlib\
-            .sha256(request['data'].encode('utf-8')).digest():
+    elif request['node_id'] == hash(request['data']):
         add_node_key_pairing(request)
         print('Node/Key pairing added')
         send_server_response(
