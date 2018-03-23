@@ -6,6 +6,8 @@ from unittest.mock import Mock
 
 import bencode
 from syncr_backend.constants import TRACKER_OK_RESULT
+from syncr_backend.constants import TRACKER_REQUEST_POST_KEY
+from syncr_backend.constants import TRACKER_REQUEST_POST_PEER
 
 from syncr_tracker.tracker import generate_node_key_file_name
 from syncr_tracker.tracker import handle_post
@@ -29,26 +31,26 @@ def test_handle_post():
         'syncr_tracker.tracker.send_server_response', autospec=True,
     ) as mock_send_server_response:
 
-        request = ['POST', node_id, None]
+        request = {
+            'request_type': TRACKER_REQUEST_POST_KEY,
+            'node_id': node_id,
+            'data': None,
+        }
         handle_post(conn, request)
         mock_request_post_node_id.assert_called_once()
         mock_request_post_drop_id.assert_not_called()
         mock_send_server_response.assert_not_called()
 
-        request = ['POST', drop_id, None]
+        request = {
+            'request_type': TRACKER_REQUEST_POST_PEER,
+            'drop_id': drop_id,
+            'data': None,
+        }
         handle_post(conn, request)
         mock_request_post_node_id.assert_called_once()
         # Does not get called a 2nd time
         mock_request_post_drop_id.assert_called_once()
         mock_send_server_response.assert_not_called()
-
-        request = ['POST', b'\00', None]
-        handle_post(conn, request)
-        mock_request_post_node_id.assert_called_once()
-        # Does not get called a 2nd time
-        mock_request_post_drop_id.assert_called_once()
-        # Does not get called a 2nd time
-        mock_send_server_response.assert_called_once()
 
 
 def test_generate_node_key_file_name():

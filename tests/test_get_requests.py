@@ -4,6 +4,9 @@ from unittest import mock
 from unittest.mock import MagicMock
 from unittest.mock import Mock
 
+from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
+from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
+
 from syncr_tracker.tracker import drop_availability
 from syncr_tracker.tracker import handle_get
 from syncr_tracker.tracker import trim_expired_tuples
@@ -26,23 +29,23 @@ def test_handle_get():
         'syncr_tracker.tracker.send_server_response', autospec=True,
     ) as mock_send_server_response:
 
-        request = ['GET', node_id, None]
+        request = {
+            'request_type': TRACKER_REQUEST_GET_KEY,
+            'node_id': node_id,
+        }
         handle_get(conn, request)
         mock_retrieve_public_key.assert_called_once()
         mock_retrieve_drop_info.assert_not_called()
         mock_send_server_response.assert_not_called()
 
-        request = ['GET', drop_id, None]
+        request = {
+            'request_type': TRACKER_REQUEST_GET_PEERS,
+            'drop_id': drop_id,
+        }
         handle_get(conn, request)
         mock_retrieve_drop_info.assert_called_once()
         mock_retrieve_public_key.assert_called_once()
         mock_send_server_response.assert_not_called()
-
-        request = ['GET', b'\00', None]
-        handle_get(conn, request)
-        mock_retrieve_drop_info.assert_called_once()
-        mock_retrieve_public_key.assert_called_once()
-        mock_send_server_response.assert_called_once()
 
 
 def test_trim_expired_tuples():
