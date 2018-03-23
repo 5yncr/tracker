@@ -21,7 +21,7 @@ from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
 from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
 from syncr_backend.constants import TRACKER_REQUEST_POST_KEY
 from syncr_backend.constants import TRACKER_REQUEST_POST_PEER
-from syncr_backend.utils.cyrpto_util import hash
+from syncr_backend.util.cyrpto_util import hash
 
 from syncr_tracker.constants import PUB_KEYS_DIRECTORY
 
