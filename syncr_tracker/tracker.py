@@ -40,10 +40,10 @@ drop_availability = defaultdict(list)
 
 def handle_request(conn, request):
     function_map = {
-        TRACKER_REQUEST_GET_KEY: retrieve_public_key(conn, request),
-        TRACKER_REQUEST_POST_KEY: request_post_node_id(conn, request),
-        TRACKER_REQUEST_GET_PEERS: retrieve_drop_info(conn, request),
-        TRACKER_REQUEST_POST_PEER: request_post_drop_id(conn, request),
+        TRACKER_REQUEST_GET_KEY: retrieve_public_key,
+        TRACKER_REQUEST_POST_KEY: request_post_node_id,
+        TRACKER_REQUEST_GET_PEERS: retrieve_drop_info,
+        TRACKER_REQUEST_POST_PEER: request_post_drop_id,
     }
     if not ('request_type' in request):
         send_server_response(
@@ -51,8 +51,8 @@ def handle_request(conn, request):
             'request_type missing',
         )
     elif request['request_type'] in function_map:
-        type = request['request_type']
-        handle_function = function_map[type]
+        t = request['request_type']
+        handle_function = function_map[t]
 
         handle_function(request, conn)
     else:
@@ -177,10 +177,10 @@ def request_post_node_id(conn, request):
             conn, TRACKER_ERROR_RESULT,
             'node_id missing',
         )
-    elif not verify_size(request['drop_id'], DROP_ID_BYTE_SIZE):
+    elif not verify_size(request['node_id'], NODE_ID_BYTE_SIZE):
         send_server_response(
             conn, TRACKER_ERROR_RESULT,
-            'drop_id incorrect size',
+            'node_id incorrect size',
         )
     elif request['node_id'] == hash(request['data']):
         add_node_key_pairing(request)

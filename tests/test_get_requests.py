@@ -8,11 +8,11 @@ from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
 from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
 
 from syncr_tracker.tracker import drop_availability
-from syncr_tracker.tracker import handle_get
+from syncr_tracker.tracker import handle_request
 from syncr_tracker.tracker import trim_expired_tuples
 
 
-def test_handle_get():
+def test_handle_request():
     h = hashlib.sha256(b'foobar')
     node_id = h.digest()
 
@@ -33,7 +33,7 @@ def test_handle_get():
             'request_type': TRACKER_REQUEST_GET_KEY,
             'node_id': node_id,
         }
-        handle_get(conn, request)
+        handle_request(conn, request)
         mock_retrieve_public_key.assert_called_once()
         mock_retrieve_drop_info.assert_not_called()
         mock_send_server_response.assert_not_called()
@@ -42,7 +42,7 @@ def test_handle_get():
             'request_type': TRACKER_REQUEST_GET_PEERS,
             'drop_id': drop_id,
         }
-        handle_get(conn, request)
+        handle_request(conn, request)
         mock_retrieve_drop_info.assert_called_once()
         mock_retrieve_public_key.assert_called_once()
         mock_send_server_response.assert_not_called()
