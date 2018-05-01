@@ -6,3 +6,11 @@ Welcome to 5yncr tracker's documentation!
     :caption: API docs:
 
     generated/syncr_tracker
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search
