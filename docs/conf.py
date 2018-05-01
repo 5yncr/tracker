@@ -156,14 +156,14 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (
-        master_doc, 'syncr_frontend.tex', 'syncr frontend Documentation',
+        master_doc, 'syncr_tracker.tex', 'syncr tracker Documentation',
         author, 'manual', False,
     ),
 ]
 
 rinoh_documents = [
     (
-        master_doc, 'syncr_frontend', 'syncr frontend Documentation', author,
+        master_doc, 'syncr_tracker', 'syncr tracker Documentation', author,
         'manual',
     ),
 ]
@@ -176,7 +176,7 @@ rinoh_template = 'article'
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (
-        master_doc, '5yncr', '5yncr Documentation',
+        master_doc, '5yncr_tracker', '5yncr tracker Documentation',
         [author], 1,
     ),
 ]
@@ -189,8 +189,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc, '5yncr', '5yncr Documentation',
-        author, '5yncr', 'One line description of project.',
+        master_doc, '5yncr_tracker', '5yncr tracker Documentation',
+        author, '5yncr tracker', 'One line description of project.',
         'Miscellaneous',
     ),
 ]
