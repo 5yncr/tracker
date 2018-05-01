@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+import argparse
 import base64
 import datetime
 import os
 import socket
-import sys
 from collections import defaultdict
 from socket import SHUT_RDWR
 
@@ -306,13 +306,31 @@ def send_server_response(conn, result, msg, data=''):
     conn.shutdown(SHUT_RDWR)
 
 
+def parser():
+    parser = argparse.ArgumentParser(
+        description="Run a tracker",
+    )
+    parser.add_argument(
+        "ip",
+        type=str,
+        help="IP to bind to",
+    )
+    parser.add_argument(
+        "port",
+        type=int,
+        help="Port to bind to",
+    )
+    return parser
+
+
 def main():
     """
     Runs the server loop taking in GET and POST requests and handling them
     accordingly
     """
-    tcp_ip = sys.argv[1]
-    tcp_port = sys.argv[2]
+    args = parser().parse_args()
+    tcp_ip = args.ip
+    tcp_port = args.port
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((tcp_ip, int(tcp_port)))

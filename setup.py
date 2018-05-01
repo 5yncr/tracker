@@ -19,6 +19,11 @@ setup(
     scripts=[
         'syncr_tracker/tracker.py',
     ],
+    entry_poinst={
+        'console_scripts': [
+            'tracker = syncr_tracker.tracker:main',
+        ],
+    },
     install_requires=[
         "5yncr_Backend==0.0.1",
         "asn1crypto==0.24.0",
