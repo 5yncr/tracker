@@ -1,10 +1,14 @@
 .. _index:
 
-Welcome to 5yncr tracker's documentation!
-=========================================
+5yncr tracker
+=============
 
 Basic usage
 -----------
+
+The tracker consists on one program: ``tracker``.  It takes a listen IP and
+port, and will just work from there.  Clients should point to its externally
+available IP and port.
 
 .. autoprogram:: syncr_tracker.tracker:parser()
     :prog: tracker
