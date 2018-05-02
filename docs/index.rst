@@ -1,3 +1,5 @@
+.. _index:
+
 Welcome to 5yncr tracker's documentation!
 =========================================
 
