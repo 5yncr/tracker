@@ -20,9 +20,9 @@ Basic Usage
 To run the tracker a user is going to have to get their externally
 addressable IP address, with the required port forwarding. A user could
 access this via ``ip a`` or ``ifconfig -a`` with the ethernet or wireless
-IP depending on intent. Then run ``python tracker IP PORT``. Once that is
+IP depending on intent. Then run ``python tracker 0.0.0.0 PORT``. Once that is
 done users looking to use this tracker can run ``make_tracker_configs IP PORT``
-on the ``backend`` side of things.
+on the ``backend`` side of things where IP is the external IP.
 
 .. autoprogram:: syncr_tracker.tracker:parser()
     :prog: tracker
