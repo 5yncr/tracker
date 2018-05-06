@@ -17,10 +17,7 @@ from syncr_backend.constants import TRACKER_DROP_PORT_INDEX
 from syncr_backend.constants import TRACKER_DROP_TIMESTAMP_INDEX
 from syncr_backend.constants import TRACKER_ERROR_RESULT
 from syncr_backend.constants import TRACKER_OK_RESULT
-from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
-from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
-from syncr_backend.constants import TRACKER_REQUEST_POST_KEY
-from syncr_backend.constants import TRACKER_REQUEST_POST_PEER
+from syncr_backend.constants import TrackerRequest
 from syncr_backend.util.crypto_util import _hash as hash
 
 from syncr_tracker.constants import PUB_KEYS_DIRECTORY
@@ -40,10 +37,10 @@ drop_availability = defaultdict(list)
 
 def handle_request(conn, request):
     function_map = {
-        TRACKER_REQUEST_GET_KEY: retrieve_public_key,
-        TRACKER_REQUEST_POST_KEY: request_post_node_id,
-        TRACKER_REQUEST_GET_PEERS: retrieve_drop_info,
-        TRACKER_REQUEST_POST_PEER: request_post_drop_id,
+        int(TrackerRequest.GET_KEY): retrieve_public_key,
+        int(TrackerRequest.POST_KEY): request_post_node_id,
+        int(TrackerRequest.GET_PEERS): retrieve_drop_info,
+        int(TrackerRequest.POST_PEER): request_post_drop_id,
     }
     if not ('request_type' in request):
         send_server_response(
