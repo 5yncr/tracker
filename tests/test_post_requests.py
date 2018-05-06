@@ -6,8 +6,7 @@ from unittest.mock import Mock
 
 import bencode
 from syncr_backend.constants import TRACKER_OK_RESULT
-from syncr_backend.constants import TRACKER_REQUEST_POST_KEY
-from syncr_backend.constants import TRACKER_REQUEST_POST_PEER
+from syncr_backend.constants import TrackerRequest
 
 from syncr_tracker.tracker import generate_node_key_file_name
 from syncr_tracker.tracker import handle_request
@@ -32,7 +31,7 @@ def test_handle_request():
     ) as mock_send_server_response:
 
         request = {
-            'request_type': TRACKER_REQUEST_POST_KEY,
+            'request_type': int(TrackerRequest.POST_KEY),
             'node_id': node_id,
             'data': None,
         }
@@ -42,7 +41,7 @@ def test_handle_request():
         mock_send_server_response.assert_not_called()
 
         request = {
-            'request_type': TRACKER_REQUEST_POST_PEER,
+            'request_type': int(TrackerRequest.POST_PEER),
             'drop_id': drop_id,
             'data': None,
         }
