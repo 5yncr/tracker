@@ -4,8 +4,7 @@ from unittest import mock
 from unittest.mock import MagicMock
 from unittest.mock import Mock
 
-from syncr_backend.constants import TRACKER_REQUEST_GET_KEY
-from syncr_backend.constants import TRACKER_REQUEST_GET_PEERS
+from syncr_backend.constants import TrackerRequest
 
 from syncr_tracker.tracker import drop_availability
 from syncr_tracker.tracker import handle_request
@@ -30,7 +29,7 @@ def test_handle_request():
     ) as mock_send_server_response:
 
         request = {
-            'request_type': TRACKER_REQUEST_GET_KEY,
+            'request_type': int(TrackerRequest.GET_KEY),
             'node_id': node_id,
         }
         handle_request(conn, request)
@@ -39,7 +38,7 @@ def test_handle_request():
         mock_send_server_response.assert_not_called()
 
         request = {
-            'request_type': TRACKER_REQUEST_GET_PEERS,
+            'request_type': int(TrackerRequest.GET_PEERS),
             'drop_id': drop_id,
         }
         handle_request(conn, request)
